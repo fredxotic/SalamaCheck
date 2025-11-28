@@ -2,20 +2,20 @@
 :root {
     --primary: #4f46e5;
     --primary-dark: #4338ca;
-    --primary-light: #6d5ce7; /* Slightly softer blue */
+    --primary-light: #6d5ce7;
     --success: #059669;
     --success-light: #10b981;
     --warning: #d97706;
     --warning-light: #f59e0b;
     --danger: #dc2626;
     --danger-light: #ef4444;
-    --background: #fcfcfc; /* Cleaner white background */
+    --background: #fcfcfc;
     --surface: #ffffff;
-    --text: #333333; /* Darker text for readability */
+    --text: #333333;
     --text-muted: #6b7280;
     --border: #e5e7eb;
     --border-light: #f3f4f6;
-    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Softer shadow */
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.1);
     --focus: #8b5cf6;
     --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
@@ -30,7 +30,7 @@
     --background: #111827;
     --surface: #1f2937;
     --surface-light: #374151;
-    --text: #f0f0f0; /* Lighter text for dark mode */
+    --text: #f0f0f0;
     --text-muted: #d1d5db;
     --border: #374151;
     --border-light: #4b5563;
@@ -143,7 +143,7 @@ body {
     border-radius: var(--radius);
     background: var(--background);
     transition: var(--transition);
-    border: 1px solid var(--border); /* Added subtle border */
+    border: 1px solid var(--border);
 }
 
 .feature-item:hover {
@@ -177,12 +177,12 @@ body {
 }
 
 .feature-icon:hover {
-    transform: scale(1.05); /* Less exaggerated hover */
+    transform: scale(1.05);
 }
 
 /* ===== Card Components ===== */
 .card {
-    border: 1px solid var(--border); /* Defined border */
+    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
     box-shadow: var(--card-shadow);
     transition: var(--transition);
@@ -191,7 +191,7 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-2px); /* Softer lift */
+    transform: translateY(-2px);
     box-shadow: var(--card-shadow-hover);
 }
 
@@ -437,7 +437,7 @@ body {
     white-space: pre-wrap;
 }
 
-/* ===== Result States (Unchanged) ===== */
+/* ===== Result States ===== */
 .safe-result {
     background: linear-gradient(135deg, #d1e7dd, #ecfdf5);
     border: 1px solid var(--success);
@@ -495,7 +495,7 @@ body {
     color: inherit;
 }
 
-/* ===== Enhanced Threat Display (Unchanged) ===== */
+/* ===== Enhanced Threat Display ===== */
 .threat-category {
     display: inline-flex;
     align-items: center;
@@ -522,7 +522,7 @@ body {
     border-color: rgba(239, 68, 68, 0.4);
 }
 
-/* ===== Enhanced Risk Score Display (Unchanged) ===== */
+/* ===== Enhanced Risk Score Display ===== */
 .risk-score {
     font-size: 1.25rem;
     font-weight: 700;
@@ -535,7 +535,7 @@ body {
 .risk-score.high {
     background: linear-gradient(135deg, #fee2e2, #fecaca);
     color: #dc2626;
-    animation: none; /* Removed aggressive pulse animation */
+    animation: none;
 }
 
 .risk-score.medium {
@@ -563,7 +563,7 @@ body {
     color: #a7f3d0;
 }
 
-/* ===== Enhanced Flag Items (Unchanged) ===== */
+/* ===== Enhanced Flag Items ===== */
 .flag-item {
     display: inline-flex;
     align-items: center;
@@ -616,7 +616,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== Theme Toggle (Unchanged) ===== */
+/* ===== Theme Toggle ===== */
 .theme-toggle {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -639,7 +639,7 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== Loading States (Unchanged) ===== */
+/* ===== Loading States ===== */
 .spinner-border-sm {
     width: 1rem;
     height: 1rem;
@@ -666,7 +666,7 @@ body {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* ===== Footer (Unchanged) ===== */
+/* ===== Footer ===== */
 footer {
     background: var(--surface);
     margin-top: auto;
@@ -688,7 +688,7 @@ footer a.text-light-emphasis:hover {
     color: var(--primary) !important;
 }
 
-/* ===== Utility Classes (Unchanged) ===== */
+/* ===== Utility Classes ===== */
 .bg-light {
     background-color: var(--background) !important;
     color: var(--text) !important;
@@ -746,7 +746,34 @@ footer a.text-light-emphasis:hover {
     color: var(--text-muted) !important;
 }
 
-/* Fix for alert text colors in dark mode */
+/* ===== FIXED: Feedback Messages - UPDATED FOR VISIBILITY ===== */
+.salama-feedback {
+    position: fixed !important;
+    top: 100px !important;
+    right: 20px !important;
+    z-index: 1060 !important;
+    min-width: 300px !important;
+    max-width: 90vw !important;
+    animation: slideInRight 0.3s ease !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    color: inherit !important;
+    border: 1px solid !important;
+}
+
+.salama-feedback .alert {
+    margin-bottom: 0 !important;
+    color: inherit !important;
+    background: inherit !important;
+    border: none !important;
+}
+
+.salama-feedback .alert span,
+.salama-feedback .alert i {
+    color: inherit !important;
+}
+
+/* Fix for alert text colors in dark mode - UPDATED FOR BETTER VISIBILITY */
 .alert {
     color: inherit !important;
 }
@@ -762,32 +789,94 @@ footer a.text-light-emphasis:hover {
     color: inherit !important;
 }
 
-/* Specific fixes for safety resources page */
+/* Specific fixes for feedback alert types - NEW ADDITIONS */
+.alert-info {
+    background: linear-gradient(135deg, #cff4fc, #f0f9ff) !important;
+    border: 1px solid #b6d4fe !important;
+    color: #055160 !important;
+}
+
+[data-theme="dark"] .alert-info {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af) !important;
+    border-color: #3b82f6 !important;
+    color: #dbeafe !important;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d1e7dd, #ecfdf5) !important;
+    border: 1px solid #a3e4d7 !important;
+    color: #065f46 !important;
+}
+
+[data-theme="dark"] .alert-success {
+    background: linear-gradient(135deg, #065f46, #047857) !important;
+    border-color: #10b981 !important;
+    color: #d1fae5 !important;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #fffbeb) !important;
+    border: 1px solid #fde68a !important;
+    color: #92400e !important;
+}
+
+[data-theme="dark"] .alert-warning {
+    background: linear-gradient(135deg, #78350f, #92400e) !important;
+    border-color: #f59e0b !important;
+    color: #fef3c7 !important;
+}
+
 .alert-danger {
+    background: linear-gradient(135deg, #f8d7da, #fef2f2) !important;
+    border: 1px solid #f5c6cb !important;
+    color: #721c24 !important;
+}
+
+[data-theme="dark"] .alert-danger {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
+    border-color: #ef4444 !important;
+    color: #fecaca !important;
+}
+
+/* Specific fixes for safety resources page */
+.safety-resources .alert-danger {
     background: linear-gradient(135deg, #f8d7da, #fef2f2);
     border: 1px solid var(--danger);
     color: #721c24;
 }
 
-[data-theme="dark"] .alert-danger {
+[data-theme="dark"] .safety-resources .alert-danger {
     background: linear-gradient(135deg, #7f1d1d, #991b1b);
     border-color: var(--danger-light);
     color: #fecaca;
 }
 
-.alert-info {
-    background: linear-gradient(135deg, #cff4fc, #f0f9ff);
-    border: 1px solid #b6d4fe;
-    color: #055160;
+/* ===== Resource Buttons - Consistent Styling ===== */
+.resource-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: var(--radius) !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 600 !important;
+    transition: var(--transition) !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.875rem !important;
 }
 
-[data-theme="dark"] .alert-info {
-    background: linear-gradient(135deg, #1e3a5f, #1e40af);
-    border-color: #3b82f6;
-    color: #dbeafe;
+.resource-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary)) !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+    text-decoration: none !important;
 }
 
-/* ===== Animations (Unchanged) ===== */
+/* ===== Animations ===== */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -832,10 +921,10 @@ footer a.text-light-emphasis:hover {
 
 @keyframes pulse-danger {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.1); /* Reduced opacity on shadow */
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.1);
     }
     50% {
-        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0); /* Reduced max size */
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0);
     }
 }
 
@@ -859,14 +948,14 @@ footer a.text-light-emphasis:hover {
     animation: slideInUp 0.4s ease-out, pulse-danger 2s ease-in-out 0.4s infinite;
 }
 
-/* ===== Enhanced Section Spacing (Unchanged) ===== */
+/* ===== Enhanced Section Spacing ===== */
 #how-it-works,
 #capabilities,
 #about {
     scroll-margin-top: 100px;
 }
 
-/* ===== Enhanced Focus States for Accessibility (Unchanged) ===== */
+/* ===== Enhanced Focus States for Accessibility ===== */
 .btn:focus-visible,
 .nav-link:focus-visible,
 .form-control:focus-visible {
@@ -883,7 +972,7 @@ select:focus-visible {
     outline-offset: 2px;
 }
 
-/* ===== Custom Scrollbar (Unchanged) ===== */
+/* ===== Custom Scrollbar ===== */
 .url-display::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -981,6 +1070,11 @@ select:focus-visible {
         padding: 0.625rem 1.25rem;
         font-size: 0.9rem;
     }
+    
+    .resource-btn {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.8rem !important;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1034,9 +1128,15 @@ select:focus-visible {
         margin: 0.25rem 0;
         white-space: normal;
     }
+    
+    .salama-feedback {
+        min-width: 280px !important;
+        right: 10px !important;
+        left: 10px !important;
+    }
 }
 
-/* ===== Print Styles (Unchanged) ===== */
+/* ===== Print Styles ===== */
 @media print {
     .navbar,
     .theme-toggle,
