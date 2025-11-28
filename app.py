@@ -232,6 +232,10 @@ class ResponseBuilder:
 def index():
     return render_template('index.html')
 
+@app.route('/safety-resources')
+def safety_resources():
+    return render_template('safety_resources.html')
+
 @app.route('/api/scan/url', methods=['POST'])
 @limiter.limit("10 per minute")
 def scan_url_endpoint():

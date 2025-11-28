@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safety Resources & Reporting Guide - SalamaCheck</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{{ url_for('index') }}#scanner" aria-label="SalamaCheck Home">
+                <i class="bi bi-shield-check me-2" aria-hidden="true"></i> 
+                <span>SalamaCheck</span>
+            </a>
+            <button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+                <i class="bi bi-moon-fill" aria-hidden="true"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container my-5" style="padding-top: 80px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <header class="text-center mb-5">
+                    <div class="hero-logo bg-danger bg-opacity-10 text-danger mb-4">
+                        <i class="bi bi-life-preserver" aria-hidden="true"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold mb-3">Safety Resources & Action Guide</h1>
+                    <p class="lead text-muted">
+                        If SalamaCheck detected a high-risk threat, please prioritize your safety. This guide provides immediate steps and international resources.
+                    </p>
+                </header>
+
+                <div class="card shadow border-0 mb-5">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fw-bold mb-4 border-bottom pb-3">Immediate Action Steps</h2>
+                        <div class="alert alert-danger d-flex align-items-start" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill fs-4 me-3 mt-1" aria-hidden="true"></i>
+                            <div>
+                                <h5 class="alert-heading fw-bold mb-2">If you feel in danger, call emergency services immediately.</h5>
+                                <p class="mb-0">
+                                    This tool is not a substitute for law enforcement. If a threat is physical or immediate, contact your local emergency number.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-camera-fill text-primary me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <strong class="d-block">Document Everything</strong>
+                                        <small class="text-muted">Take screenshots and save the entire message content. Do not delete or edit evidence.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-slash-circle-fill text-warning me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <strong class="d-block">Do Not Engage</strong>
+                                        <small class="text-muted">Block the sender and do not respond to messages or click suspicious links.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <div class="d-flex">
+                                    <i class="bi bi-flag-fill text-success me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <strong class="d-block">Report Immediately</strong>
+                                        <small class="text-muted">Use the resources below to report threats to relevant platforms or authorities.</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-5">
+                    <h2 class="fw-bold mb-4 border-bottom pb-3">Digital Safety Helplines</h2>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="card resource-card p-4 h-100">
+                                <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                    <i class="bi bi-person-exclamation" aria-hidden="true"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Cyber Safety & Harassment</h5>
+                                <p class="text-muted mb-3">Resources dedicated to combating cybercrime, stalking, and online abuse.</p>
+                                <a href="https://cybercrime.gov/" target="_blank" class="btn btn-outline-warning btn-sm">Internet Crime Complaint Center (IC3)</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card resource-card p-4 h-100">
+                                <div class="feature-icon bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                    <i class="bi bi-heart-pulse-fill" aria-hidden="true"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Mental Health & Crisis</h5>
+                                <p class="text-muted mb-3">If the threat involves self-harm or severe distress.</p>
+                                <a href="https://www.iasp.info/crisis-centres/" target="_blank" class="btn btn-outline-danger btn-sm">IASP Global Crisis Centres Directory</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card resource-card p-4 h-100">
+                                <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                    <i class="bi bi-cloud-slash-fill" aria-hidden="true"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Online Child Safety</h5>
+                                <p class="text-muted mb-3">If the threat involves a minor or suspected grooming/exploitation.</p>
+                                <a href="https://www.missingkids.org/gethelp/cybertipline" target="_blank" class="btn btn-outline-primary btn-sm">National Center for Missing & Exploited Children (NCMEC)</a>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card resource-card p-4 h-100">
+                                <div class="feature-icon bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                    <i class="bi bi-shield-fill-check" aria-hidden="true"></i>
+                                </div>
+                                <h5 class="fw-bold mb-3">Phishing & Fraud Reporting</h5>
+                                <p class="text-muted mb-3">For reporting malicious links, phishing attempts, or digital scams.</p>
+                                <a href="https://safebrowsing.google.com/safebrowsing/report_phish/" target="_blank" class="btn btn-outline-success btn-sm">Anti-Phishing Working Group (APWG)</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow border-0 mb-5">
+                    <div class="card-body p-4 p-md-5">
+                        <h2 class="fw-bold mb-4 border-bottom pb-3">Report to Online Platforms</h2>
+                        <p class="text-muted mb-4">Most platforms have dedicated teams for reviewing harmful content. Use their built-in reporting features:</p>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-facebook text-primary me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-2">Facebook/Instagram</h6>
+                                        <p class="text-muted small mb-0">Use the "Report Post" or "Report Profile" feature directly within the app.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-twitter text-info me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-2">Twitter/X</h6>
+                                        <p class="text-muted small mb-0">Use the "Report Tweet" or "Report Profile" options in the platform.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-discord text-indigo me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-2">Discord/Gaming</h6>
+                                        <p class="text-muted small mb-0">Report using the platform's Trust & Safety form, providing User IDs and message links.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-start">
+                                    <i class="bi bi-whatsapp text-success me-3 mt-1" aria-hidden="true"></i>
+                                    <div>
+                                        <h6 class="fw-bold mb-2">WhatsApp/Messaging</h6>
+                                        <p class="text-muted small mb-0">Use the built-in reporting feature and block the contact immediately.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-5 pt-3">
+                    <div class="alert alert-info border-0">
+                        <h5 class="fw-bold mb-3">Remember Your Safety Comes First</h5>
+                        <p class="mb-0">
+                            Trust your instincts. If a situation feels unsafe, remove yourself from it and seek help immediately. 
+                            Digital threats can have real-world consequences - take them seriously.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h5 class="fw-bold mb-2">
+                        <i class="bi bi-shield-check me-2" aria-hidden="true"></i>SalamaCheck
+                    </h5>
+                    <p class="text-light-emphasis mb-0">
+                        A transparent and secure tool for your online safety.
+                    </p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-light btn-sm">
+                        <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Back to Scanner
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme Management for safety_resources.html
+        class ThemeManager {
+            static init() {
+                const themeToggle = document.getElementById('themeToggle');
+                if (!themeToggle) return;
+                
+                const savedTheme = localStorage.getItem('salama-theme') || 'light';
+                this.setTheme(savedTheme);
+                
+                themeToggle.addEventListener('click', () => {
+                    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    this.setTheme(newTheme);
+                });
+            }
+            
+            static setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('salama-theme', theme);
+                
+                const icon = document.getElementById('themeToggle')?.querySelector('i');
+                if (!icon) return;
+                
+                if (theme === 'dark') {
+                    icon.className = 'bi bi-sun-fill';
+                    themeToggle.setAttribute('aria-label', 'Switch to light theme');
+                    themeToggle.title = 'Switch to light theme';
+                } else {
+                    icon.className = 'bi bi-moon-fill';
+                    themeToggle.setAttribute('aria-label', 'Switch to dark theme');
+                    themeToggle.title = 'Switch to dark theme';
+                }
+            }
+        }
+
+        // Initialize theme when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            ThemeManager.init();
+            
+            // Add smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

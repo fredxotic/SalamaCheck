@@ -51,8 +51,7 @@ class SalamaCheckUI {
         }
 
         const helpBtn = document.createElement('a');
-        // This links to an internal path which you can render an HTML page for
-        helpBtn.href = '/safety-resources'; 
+        helpBtn.href = '/safety-resources';
         helpBtn.className = 'btn btn-outline-danger mt-3 help-btn';
         helpBtn.innerHTML = `
             <i class="bi bi-life-preserver"></i>
@@ -524,7 +523,7 @@ function displayTextResult(result) {
             class: 'danger-result',
             icon: '🚨',
             title: 'High Risk Detected',
-            showHelp: true
+            showHelp: true  // CHANGED: Now shows help button for high risk text results
         },
         'medium': {
             class: 'warning-result',
@@ -683,7 +682,7 @@ function displayTextResult(result) {
     metaInfo.innerHTML = metaText;
     flagsElement.appendChild(metaInfo);
 
-    // Show/hide help button
+    // Show/hide help button - NOW APPLIES TO TEXT RESULTS TOO
     if (config.showHelp) {
         SalamaCheckUI.showHelpButton('textResult');
     } else {
@@ -699,7 +698,7 @@ function displayTextResult(result) {
 function formatCategoryName(category) {
     const categoryMap = {
         'severe_threat': 'Severe Threats',
-        'grooming': 'Grooming Behavior', // NEW: Added mapping
+        'grooming': 'Grooming Behavior',
         'violent_threat': 'Violent Threats',
         'stalking': 'Stalking',
         'gendered_harassment': 'Gendered Harassment',
@@ -719,7 +718,7 @@ function formatFlagName(flag) {
         'stalking': 'Stalking Behavior',
         'coercion': 'Coercion',
         'explicit_content': 'Explicit Content',
-        'grooming': 'Grooming/Social Engineering' // NEW: Added mapping
+        'grooming': 'Grooming/Social Engineering'
     };
     return flagMap[flag] || flag.replace(/_/g, ' ');
 }
@@ -728,7 +727,7 @@ function formatFlagName(flag) {
 function formatRiskFactor(factor) {
     const factorMap = {
         'severe_violent_threats': 'Severe Violent Threats',
-        'grooming_behavior': 'Grooming Behavior', // NEW: Added mapping
+        'grooming_behavior': 'Grooming Behavior',
         'violent_threats': 'Violent Threats',
         'stalking_behavior': 'Stalking Behavior',
         'gendered_harassment': 'Gendered Harassment',
@@ -745,7 +744,7 @@ function formatRiskFactor(factor) {
 // Generate appropriate risk message
 function getRiskMessage(result) {
     if (result.risk === 'high') {
-        if (result.threat_categories?.grooming) { // Prioritize Grooming
+        if (result.threat_categories?.grooming) {
             return '🚨 Critical Risk: Grooming behavior and social engineering tactics detected. Do not engage.';
         } else if (result.threat_categories?.severe_threat) {
             return 'Severe violent threats detected. This content requires immediate attention.';
