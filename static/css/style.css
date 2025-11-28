@@ -261,10 +261,6 @@ body {
     transform: translateY(-1px);
 }
 
-.nav-tabs .nav-link:hover::before {
-    width: 80%;
-}
-
 .nav-tabs .nav-link.active {
     background: var(--surface);
     color: var(--primary);
@@ -338,19 +334,6 @@ body {
 
 .form-control.is-invalid ~ .invalid-feedback {
     display: block;
-}
-
-/* Character Counter */
-.char-counter {
-    font-size: 0.875rem;
-    color: var(--text-muted);
-    text-align: right;
-    margin-top: 0.25rem;
-}
-
-.char-counter.text-warning {
-    color: var(--warning);
-    font-weight: 600;
 }
 
 /* ===== Buttons ===== */
@@ -454,7 +437,7 @@ body {
     white-space: pre-wrap;
 }
 
-/* ===== Result States - Softer colors/shadows on alerts ===== */
+/* ===== Result States (Unchanged) ===== */
 .safe-result {
     background: linear-gradient(135deg, #d1e7dd, #ecfdf5);
     border: 1px solid var(--success);
@@ -715,7 +698,7 @@ footer a.text-light-emphasis:hover {
     background-color: var(--surface) !important;
 }
 
-/* ===== Animations (Pulse Danger Softened) ===== */
+/* ===== Animations (Unchanged) ===== */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -831,7 +814,7 @@ select:focus-visible {
     background: var(--text-muted);
 }
 
-/* ===== Responsive Design (Unchanged) ===== */
+/* ===== Responsive Design FIXES ===== */
 @media (max-width: 768px) {
     .card-body {
         padding: 1.5rem !important;
@@ -881,6 +864,11 @@ select:focus-visible {
     .url-display {
         font-size: 0.8rem;
         max-height: 100px;
+    }
+    
+    /* FIX: Restore Input Group Padding to give the icon space it needs */
+    .input-group-text {
+        padding: 0.875rem 1rem !important;
     }
     
     /* Enhanced Mobile Styles */

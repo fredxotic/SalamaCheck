@@ -885,26 +885,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 analyzeTextBtn.click();
             }
         });
-
-        // Add character counter for text input
-        textInput.addEventListener('input', function() {
-            const charCount = this.value.length;
-            let counter = this.parentElement.querySelector('.char-counter');
-            
-            if (!counter) {
-                counter = document.createElement('div');
-                counter.className = 'char-counter form-text mt-1';
-                this.parentElement.appendChild(counter);
-            }
-            
-            counter.textContent = `${charCount}/5000 characters`;
-            
-            if (charCount > 4500) {
-                counter.classList.add('text-warning');
-            } else {
-                counter.classList.remove('text-warning');
-            }
-        });
+        // REMOVED: Character counter logic removed to fix mobile layout.
     }
 
     // Enhanced error handling
