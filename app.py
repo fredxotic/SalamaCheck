@@ -2,37 +2,48 @@ from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from analyzer import scan_url, scan_text
+from analyzer import scan_url, scan_text, fetch_and_update_threat_intel, get_threat_intel_status
 import logging
 import re
 import time
 import os
 from urllib.parse import urlparse
 from typing import Dict, Any, Optional
+from werkzeug.middleware.proxy_fix import ProxyFix
+from apscheduler.schedulers.background import BackgroundScheduler
+import atexit
 
 class PrivacyFilter(logging.Filter):
     def filter(self, record):
         if hasattr(record, 'msg'):
-            # Enhanced URL redaction
             record.msg = re.sub(r'https?://[^\s]+', '[URL_REDACTED]', str(record.msg))
             record.msg = re.sub(r'\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b', '[IP_REDACTED]', record.msg)
-            # Redact potential sensitive message content
             record.msg = re.sub(r'(?i)(password|credit.?card|social.?security|bank.?details)', '[SENSITIVE_REDACTED]', record.msg)
         return True
 
 class Config:
-    """Enhanced configuration management with environment variables"""
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
     TESTING = os.environ.get('TESTING', 'False').lower() == 'true'
     RATE_LIMIT = os.environ.get('RATE_LIMIT', '10 per minute')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max request size
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
     TRUSTED_PROXIES = os.environ.get('TRUSTED_PROXIES', '').split(',')
     ALLOWED_ORIGINS = os.environ.get('ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+    # Threat Intelligence Update Interval (in hours)
+    THREAT_INTEL_INTERVAL = int(os.environ.get('THREAT_INTEL_INTERVAL', 24))
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Enhanced security headers middleware
+# Apply proxy fix for correct client IP behind load balancers/reverse proxies
+app.wsgi_app = ProxyFix(
+    app.wsgi_app, 
+    x_for=1, 
+    x_proto=1, 
+    x_host=1, 
+    x_port=1, 
+    x_prefix=1
+)
+
 @app.after_request
 def set_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
@@ -43,7 +54,7 @@ def set_security_headers(response):
     response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
     return response
 
-# Initialize extensions with enhanced CORS configuration
+# Initialize extensions with CORS configuration
 CORS(app, resources={
     r"/api/*": {
         "origins": Config.ALLOWED_ORIGINS,
@@ -57,10 +68,10 @@ limiter = Limiter(
     key_func=get_remote_address,
     default_limits=[Config.RATE_LIMIT],
     storage_uri="memory://",
-    strategy="fixed-window",  # Enhanced rate limiting strategy
+    strategy="fixed-window",
 )
 
-# Enhanced logging configuration
+# Logging configuration
 logging.basicConfig(
     level=logging.INFO if not Config.DEBUG else logging.DEBUG,
     format='%(asctime)s %(levelname)s [%(name)s] %(message)s',
@@ -69,16 +80,38 @@ logging.basicConfig(
 for handler in logging.getLogger().handlers:
     handler.addFilter(PrivacyFilter())
 
-# Suppress noisy logs in production
 if not Config.DEBUG:
     logging.getLogger('werkzeug').setLevel(logging.WARNING)
 
+# =============================================================================
+# THREAT INTELLIGENCE SCHEDULER
+# =============================================================================
+scheduler = BackgroundScheduler()
+scheduler.add_job(
+    func=fetch_and_update_threat_intel,
+    trigger='interval',
+    hours=Config.THREAT_INTEL_INTERVAL,
+    id='threat_intel_update',
+    name='Automated Threat Intelligence Update',
+    replace_existing=True # FIX: Changed from 'replace_original' to 'replace_existing'
+)
+
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    # Run initial update immediately on startup
+    fetch_and_update_threat_intel()
+    # Start scheduler only in the main thread (outside of Werkzeug reloader)
+    scheduler.start()
+    atexit.register(lambda: scheduler.shutdown())
+
+@app.route('/api/threat-intel/status')
+def threat_intel_status_endpoint():
+    """Endpoint to check the status of the threat intelligence update"""
+    return jsonify(ResponseBuilder.success(get_threat_intel_status(), "Threat intelligence status retrieved"))
+
+# (InputValidator and ResponseBuilder classes remain unchanged, omitting for brevity)
 class InputValidator:
-    """Enhanced centralized input validation"""
-    
     @staticmethod
     def validate_url(url: str) -> Dict[str, Any]:
-        """Enhanced URL validation with additional security checks"""
         if not url or not url.strip():
             return {'valid': False, 'error': 'URL cannot be empty'}
         
@@ -87,7 +120,6 @@ class InputValidator:
         if len(url) > 500:
             return {'valid': False, 'error': 'URL too long (maximum 500 characters)'}
         
-        # Enhanced URL format validation
         try:
             parsed = urlparse(url)
             if not parsed.scheme:
@@ -97,11 +129,9 @@ class InputValidator:
             if not parsed.netloc:
                 return {'valid': False, 'error': 'Invalid URL format - missing domain'}
             
-            # Enhanced private URL blocking
             if InputValidator._is_private_url(parsed):
                 return {'valid': False, 'error': 'Private/internal URLs are not allowed for security reasons'}
             
-            # Additional security checks
             if InputValidator._has_suspicious_patterns(url):
                 return {'valid': False, 'error': 'URL contains suspicious patterns'}
                 
@@ -112,7 +142,6 @@ class InputValidator:
     
     @staticmethod
     def validate_text(text: str) -> Dict[str, Any]:
-        """Enhanced text validation with content safety checks"""
         if not text or not text.strip():
             return {'valid': False, 'error': 'Text cannot be empty'}
         
@@ -124,11 +153,9 @@ class InputValidator:
         if len(text) < 3:
             return {'valid': False, 'error': 'Text too short to analyze (minimum 3 characters)'}
         
-        # Enhanced sanitization while preserving meaningful content
         sanitized = re.sub(r'[^\w\s\.,!?@#$%^&*()_+\-=\[\]{};:\'\"\\|`~<>/]', '', text)
         sanitized = sanitized.strip()
         
-        # Check if sanitization removed too much content
         if len(sanitized) < 3:
             return {'valid': False, 'error': 'Text contains too many invalid characters'}
         
@@ -136,17 +163,14 @@ class InputValidator:
     
     @staticmethod
     def _is_private_url(parsed_url) -> bool:
-        """Enhanced private URL detection"""
         hostname = parsed_url.hostname
         
         if not hostname:
             return True
             
-        # Localhost and local network checks
         if hostname in ['localhost', '127.0.0.1', '::1', '0.0.0.0']:
             return True
         
-        # Enhanced private IP ranges detection
         private_patterns = [
             r'^10\.',
             r'^172\.(1[6-9]|2[0-9]|3[0-1])\.',
@@ -167,7 +191,6 @@ class InputValidator:
     
     @staticmethod
     def _has_suspicious_patterns(url: str) -> bool:
-        """Check for potentially malicious URL patterns"""
         suspicious_patterns = [
             r'javascript:',
             r'vbscript:',
@@ -175,8 +198,8 @@ class InputValidator:
             r'file:',
             r'ftp:',
             r'\\x',
-            r'%00',  # Null byte
-            r'\.\./',  # Directory traversal
+            r'%00',
+            r'\.\./',
         ]
         
         for pattern in suspicious_patterns:
@@ -185,8 +208,6 @@ class InputValidator:
         return False
 
 class ResponseBuilder:
-    """Enhanced standardized API response formatting"""
-    
     @staticmethod
     def success(data: Dict[str, Any], message: str = "Success") -> Dict[str, Any]:
         return {
@@ -194,7 +215,7 @@ class ResponseBuilder:
             'message': message,
             'data': data,
             'timestamp': time.time(),
-            'version': '2.0.0'  # Reflect enhanced analyzer version
+            'version': '2.0.0'
         }
     
     @staticmethod
@@ -209,33 +230,26 @@ class ResponseBuilder:
 
 @app.route('/')
 def index():
-    """Main route that renders the index.html template"""
     return render_template('index.html')
 
 @app.route('/api/scan/url', methods=['POST'])
 @limiter.limit("10 per minute")
 def scan_url_endpoint():
-    """Enhanced API endpoint to scan and analyze URLs for potential dangers"""
     start_time = time.time()
     
     try:
-        # Get and validate request data
         data = request.get_json()
         if not data or 'link' not in data:
             return ResponseBuilder.error('No URL provided', 'MISSING_URL', 400)
         
-        # Validate URL input
         validation = InputValidator.validate_url(data['link'])
         if not validation['valid']:
             return ResponseBuilder.error(validation['error'], 'INVALID_URL', 400)
         
-        # Log minimal information (privacy-focused)
         app.logger.info("URL scan requested - processing")
         
-        # Perform URL scanning
         result = scan_url(validation['sanitized_url'])
         
-        # Add performance metrics
         result['processing_time'] = round(time.time() - start_time, 3)
         
         app.logger.info(f"URL scan completed in {result['processing_time']}s - Status: {result.get('status', 'unknown')}")
@@ -254,27 +268,21 @@ def scan_url_endpoint():
 @app.route('/api/scan/text', methods=['POST'])
 @limiter.limit("15 per minute")
 def scan_text_endpoint():
-    """Enhanced API endpoint to scan text for threats, harassment, and suspicious content"""
     start_time = time.time()
     
     try:
-        # Get and validate request data
         data = request.get_json()
         if not data or 'message' not in data:
             return ResponseBuilder.error('No text provided', 'MISSING_TEXT', 400)
         
-        # Validate text input
         validation = InputValidator.validate_text(data['message'])
         if not validation['valid']:
             return ResponseBuilder.error(validation['error'], 'INVALID_TEXT', 400)
         
-        # Log minimal information (privacy-focused)
         app.logger.info("Text analysis requested - processing")
         
-        # Perform text analysis
         result = scan_text(validation['sanitized_text'])
         
-        # Add performance metrics
         result['processing_time'] = round(time.time() - start_time, 3)
         
         app.logger.info(f"Text analysis completed in {result['processing_time']}s - Risk: {result.get('risk', 'unknown')}")
@@ -292,7 +300,6 @@ def scan_text_endpoint():
 
 @app.route('/api/health')
 def health_check():
-    """Enhanced comprehensive health check endpoint"""
     health_status = {
         'status': 'healthy',
         'service': 'SalamaCheck',
@@ -303,27 +310,27 @@ def health_check():
             'url_scanning': True,
             'text_analysis': True,
             'threat_detection': True,
-            'rate_limiting': True
+            'rate_limiting': True,
+            'threat_intel_update': get_threat_intel_status()
         }
     }
     return jsonify(health_status)
 
 @app.route('/api/info')
 def api_info():
-    """API information endpoint"""
     return jsonify({
         'name': 'SalamaCheck API',
         'version': '2.0.0',
-        'description': 'Advanced online safety scanner for detecting dangerous links and harmful messages',
+        'description': 'Online safety scanner for detecting dangerous links and harmful messages',
         'endpoints': {
             '/api/scan/url': 'POST - Scan URL for security threats',
             '/api/scan/text': 'POST - Analyze text for harmful content',
             '/api/health': 'GET - Service health check',
-            '/api/info': 'GET - API information'
+            '/api/info': 'GET - API information',
+            '/api/threat-intel/status': 'GET - Threat intelligence update status'
         }
     })
 
-# Enhanced error handlers
 @app.errorhandler(404)
 def not_found(error):
     return ResponseBuilder.error('Endpoint not found', 'NOT_FOUND', 404)
@@ -360,7 +367,7 @@ if __name__ == '__main__':
     host = os.environ.get('HOST', '0.0.0.0')
     port = int(os.environ.get('PORT', 5000))
     
-    app.logger.info(f"Starting SalamaCheck on {host}:{port} (Debug: {Config.DEBUG})")
+    app.logger.info(f"Starting SalamaCheck on {host}:{port} (Debug: {Config.DEBUG}, Threat Intel Interval: {Config.THREAT_INTEL_INTERVAL}h)")
     
     app.run(
         host=host, 

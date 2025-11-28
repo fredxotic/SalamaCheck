@@ -2,21 +2,21 @@
 :root {
     --primary: #4f46e5;
     --primary-dark: #4338ca;
-    --primary-light: #818cf8;
+    --primary-light: #6d5ce7; /* Slightly softer blue */
     --success: #059669;
     --success-light: #10b981;
     --warning: #d97706;
     --warning-light: #f59e0b;
     --danger: #dc2626;
     --danger-light: #ef4444;
-    --background: #f8f9fa;
+    --background: #fcfcfc; /* Cleaner white background */
     --surface: #ffffff;
-    --text: #374151;
+    --text: #333333; /* Darker text for readability */
     --text-muted: #6b7280;
     --border: #e5e7eb;
     --border-light: #f3f4f6;
-    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-    --card-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.12);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Softer shadow */
+    --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.1);
     --focus: #8b5cf6;
     --focus-ring: 0 0 0 3px rgba(139, 92, 246, 0.1);
     --radius-sm: 4px;
@@ -30,12 +30,12 @@
     --background: #111827;
     --surface: #1f2937;
     --surface-light: #374151;
-    --text: #f9fafb;
+    --text: #f0f0f0; /* Lighter text for dark mode */
     --text-muted: #d1d5db;
     --border: #374151;
     --border-light: #4b5563;
-    --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
-    --card-shadow-hover: 0 12px 48px rgba(0, 0, 0, 0.48);
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    --card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 /* ===== Base Styles ===== */
@@ -124,7 +124,7 @@ body {
     box-shadow: 0 12px 40px rgba(79, 70, 229, 0.4);
 }
 
-/* ===== Feature List ===== */
+/* ===== Feature List - Less intrusive icons ===== */
 .feature-list {
     display: flex;
     justify-content: center;
@@ -143,6 +143,7 @@ body {
     border-radius: var(--radius);
     background: var(--background);
     transition: var(--transition);
+    border: 1px solid var(--border); /* Added subtle border */
 }
 
 .feature-item:hover {
@@ -154,11 +155,11 @@ body {
     font-size: 1.1rem;
 }
 
-.feature-item .bi-check-circle-fill.checked {
+.feature-item .checked {
     color: var(--success);
 }
 
-.feature-item .bi-check-circle-fill.unchecked {
+.feature-item .unchecked {
     color: var(--text-muted);
     opacity: 0.6;
 }
@@ -176,12 +177,12 @@ body {
 }
 
 .feature-icon:hover {
-    transform: scale(1.1) rotate(5deg);
+    transform: scale(1.05); /* Less exaggerated hover */
 }
 
 /* ===== Card Components ===== */
 .card {
-    border: none;
+    border: 1px solid var(--border); /* Defined border */
     border-radius: var(--radius-xl);
     box-shadow: var(--card-shadow);
     transition: var(--transition);
@@ -190,7 +191,7 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px); /* Softer lift */
     box-shadow: var(--card-shadow-hover);
 }
 
@@ -453,7 +454,7 @@ body {
     white-space: pre-wrap;
 }
 
-/* ===== Result States ===== */
+/* ===== Result States - Softer colors/shadows on alerts ===== */
 .safe-result {
     background: linear-gradient(135deg, #d1e7dd, #ecfdf5);
     border: 1px solid var(--success);
@@ -511,7 +512,7 @@ body {
     color: inherit;
 }
 
-/* ===== Enhanced Threat Display ===== */
+/* ===== Enhanced Threat Display (Unchanged) ===== */
 .threat-category {
     display: inline-flex;
     align-items: center;
@@ -529,7 +530,6 @@ body {
 
 .threat-category:hover {
     transform: translateY(-2px);
-    background: rgba(239, 68, 68, 0.2);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
@@ -539,7 +539,7 @@ body {
     border-color: rgba(239, 68, 68, 0.4);
 }
 
-/* ===== Enhanced Risk Score Display ===== */
+/* ===== Enhanced Risk Score Display (Unchanged) ===== */
 .risk-score {
     font-size: 1.25rem;
     font-weight: 700;
@@ -552,7 +552,7 @@ body {
 .risk-score.high {
     background: linear-gradient(135deg, #fee2e2, #fecaca);
     color: #dc2626;
-    animation: pulse 2s infinite;
+    animation: none; /* Removed aggressive pulse animation */
 }
 
 .risk-score.medium {
@@ -580,7 +580,7 @@ body {
     color: #a7f3d0;
 }
 
-/* ===== Enhanced Flag Items ===== */
+/* ===== Enhanced Flag Items (Unchanged) ===== */
 .flag-item {
     display: inline-flex;
     align-items: center;
@@ -633,7 +633,7 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== Theme Toggle ===== */
+/* ===== Theme Toggle (Unchanged) ===== */
 .theme-toggle {
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -656,7 +656,7 @@ body {
     background: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== Loading States ===== */
+/* ===== Loading States (Unchanged) ===== */
 .spinner-border-sm {
     width: 1rem;
     height: 1rem;
@@ -683,7 +683,7 @@ body {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* ===== Footer ===== */
+/* ===== Footer (Unchanged) ===== */
 footer {
     background: var(--surface);
     margin-top: auto;
@@ -705,7 +705,7 @@ footer a.text-light-emphasis:hover {
     color: var(--primary) !important;
 }
 
-/* ===== Utility Classes ===== */
+/* ===== Utility Classes (Unchanged) ===== */
 .bg-light {
     background-color: var(--background) !important;
     color: var(--text) !important;
@@ -715,7 +715,7 @@ footer a.text-light-emphasis:hover {
     background-color: var(--surface) !important;
 }
 
-/* ===== Animations ===== */
+/* ===== Animations (Pulse Danger Softened) ===== */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -760,10 +760,10 @@ footer a.text-light-emphasis:hover {
 
 @keyframes pulse-danger {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.1); /* Reduced opacity on shadow */
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
+        box-shadow: 0 0 0 4px rgba(220, 53, 69, 0); /* Reduced max size */
     }
 }
 
@@ -787,14 +787,14 @@ footer a.text-light-emphasis:hover {
     animation: slideInUp 0.4s ease-out, pulse-danger 2s ease-in-out 0.4s infinite;
 }
 
-/* ===== Enhanced Section Spacing ===== */
+/* ===== Enhanced Section Spacing (Unchanged) ===== */
 #how-it-works,
 #capabilities,
 #about {
     scroll-margin-top: 100px;
 }
 
-/* ===== Enhanced Focus States for Accessibility ===== */
+/* ===== Enhanced Focus States for Accessibility (Unchanged) ===== */
 .btn:focus-visible,
 .nav-link:focus-visible,
 .form-control:focus-visible {
@@ -811,7 +811,7 @@ select:focus-visible {
     outline-offset: 2px;
 }
 
-/* ===== Custom Scrollbar ===== */
+/* ===== Custom Scrollbar (Unchanged) ===== */
 .url-display::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -831,7 +831,7 @@ select:focus-visible {
     background: var(--text-muted);
 }
 
-/* ===== Responsive Design ===== */
+/* ===== Responsive Design (Unchanged) ===== */
 @media (max-width: 768px) {
     .card-body {
         padding: 1.5rem !important;
@@ -959,7 +959,7 @@ select:focus-visible {
     }
 }
 
-/* ===== Print Styles ===== */
+/* ===== Print Styles (Unchanged) ===== */
 @media print {
     .navbar,
     .theme-toggle,

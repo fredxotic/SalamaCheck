@@ -7,30 +7,25 @@
     <meta name="keywords" content="safety, security, link scanner, message analyzer, online protection, threat detection">
     <meta name="author" content="SalamaCheck">
     
-    <!-- Open Graph -->
     <meta property="og:title" content="SalamaCheck - Online Safety Scanner">
     <meta property="og:description" content="Advanced protection against dangerous links, harmful messages, and online threats">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url_for('index', _external=True) }}">
     
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SalamaCheck - Online Safety Scanner">
     <meta name="twitter:description" content="Advanced protection against dangerous links and harmful messages">
     
     <title>SalamaCheck - Online Safety Scanner</title>
     
-    <!-- Stylesheets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/icon.png') }}">
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon.png') }}">
 </head>
 <body>
-    <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
         <div class="container">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="#scanner" aria-label="SalamaCheck Home">
@@ -43,38 +38,33 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container my-5" style="padding-top: 80px;">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                <!-- Hero Section -->
                 <div class="text-center mb-5">
-                    <!-- Logo -->
                     <div class="hero-logo">
                         <i class="bi bi-shield-check" aria-hidden="true"></i>
                     </div>
                     
                     <h1 class="display-4 fw-bold mb-3">SalamaCheck</h1>
-                    <p class="lead text-muted mb-4">Advanced AI-powered protection against online threats and harmful content</p>
+                    <p class="lead text-muted mb-4">Your AI-powered shield against malicious links and harmful communication.</p>
                     
-                    <!-- Feature List -->
                     <div class="feature-list">
                         <div class="feature-item">
                             <i class="bi bi-shield-check checked" aria-hidden="true"></i>
-                            <span>Threat Detection</span>
+                            <span>Real-time Safety Scan</span>
                         </div>
                         <div class="feature-item">
                             <i class="bi bi-graph-up-arrow checked" aria-hidden="true"></i>
-                            <span>AI Analysis</span>
+                            <span>Privacy First</span>
                         </div>
                         <div class="feature-item">
                             <i class="bi bi-lightning-charge checked" aria-hidden="true"></i>
-                            <span>Real-time Results</span>
+                            <span>Contextual AI</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Scanner Card -->
                 <div class="card shadow border-0" id="scanner">
                     <div class="card-header bg-white py-4">
                         <ul class="nav nav-tabs card-header-tabs nav-justified" id="salamaTabs" role="tablist">
@@ -97,13 +87,12 @@
 
                     <div class="card-body p-4 p-md-5">
                         <div class="tab-content" id="salamaTabContent">
-                            <!-- Link Scanner Tab -->
                             <div class="tab-pane fade show active" id="link-scanner" role="tabpanel" aria-labelledby="link-tab">
                                 <div class="text-center mb-4">
                                     <i class="bi bi-link-45deg text-primary mb-3 feature-icon" aria-hidden="true"></i>
-                                    <h2 class="card-title mb-3">Scan Suspicious Links</h2>
+                                    <h2 class="card-title mb-3">Scan Links for Safety</h2>
                                     <p class="text-muted">
-                                        Advanced URL analysis for phishing, tracking, malicious redirects, and explicit content
+                                        Check URLs for redirects, phishing, malware, and explicit content.
                                     </p>
                                 </div>
                                 
@@ -118,7 +107,7 @@
                                                aria-describedby="linkHelp">
                                     </div>
                                     <div id="linkHelp" class="form-text">
-                                        We analyze redirects, check against known dangerous domains, and scan for explicit content
+                                        We analyze the full redirect chain and check against updated threat intelligence lists.
                                     </div>
                                     <div class="invalid-feedback">Please enter a valid URL</div>
                                 </div>
@@ -128,7 +117,6 @@
                                     <span class="btn-text">Scan Link Security</span>
                                 </button>
                                 
-                                <!-- URL Scan Results -->
                                 <div class="mt-4 d-none" id="urlResult">
                                     <div class="alert mb-0" id="urlAlert">
                                         <div class="d-flex align-items-start">
@@ -142,13 +130,12 @@
                                 </div>
                             </div>
 
-                            <!-- Message Analyzer Tab -->
                             <div class="tab-pane fade" id="message-analyzer" role="tabpanel" aria-labelledby="message-tab">
                                 <div class="text-center mb-4">
                                     <i class="bi bi-chat-text text-primary mb-3 feature-icon" aria-hidden="true"></i>
                                     <h2 class="card-title mb-3">Analyze Message Safety</h2>
                                     <p class="text-muted">
-                                        Advanced AI detection for threats, harassment, coercion, and explicit content
+                                        AI detection for threats, harassment, coercion, and dangerous grooming language.
                                     </p>
                                 </div>
                                 
@@ -163,7 +150,7 @@
                                                   aria-describedby="textHelp" maxlength="5000"></textarea>
                                     </div>
                                     <div id="textHelp" class="form-text">
-                                        Advanced AI analyzes for threats, harassment, coercion, and explicit content with contextual understanding
+                                        Our AI analyzes for threats, harassment, and critical safety risks, including implicit grooming.
                                     </div>
                                     <div class="invalid-feedback">Please enter a message to analyze (minimum 3 characters)</div>
                                 </div>
@@ -173,7 +160,6 @@
                                     <span class="btn-text">Analyze Message Safety</span>
                                 </button>
                                 
-                                <!-- Text Analysis Results -->
                                 <div class="mt-4 d-none" id="textResult">
                                     <div class="alert mb-0" id="textAlert">
                                         <div class="d-flex align-items-start">
@@ -193,121 +179,127 @@
                     </div>
                 </div>
 
-                <!-- How It Works Section -->
                 <div class="mt-5 pt-5" id="how-it-works">
                     <div class="text-center mb-5">
-                        <h2 class="fw-bold mb-3">Advanced Threat Detection</h2>
-                        <p class="text-muted">Powered by sophisticated AI algorithms for comprehensive online safety</p>
+                        <h2 class="fw-bold mb-3">How SalamaCheck Works</h2>
+                        <p class="text-muted">A calm, secure, and privacy-first approach to online safety.</p>
                     </div>
                     <div class="row g-4">
                         <div class="col-md-4">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                                    <i class="bi bi-shield-check" aria-hidden="true"></i>
+                                    <i class="bi bi-link-45deg" aria-hidden="true"></i>
                                 </div>
-                                <h5>Advanced URL Protection</h5>
-                                <p class="text-muted small">Real-time analysis against dangerous domains, phishing attempts, malicious redirects, and explicit content</p>
+                                <h5>Full Path Verification</h5>
+                                <p class="text-muted small">We follow all hidden redirects, analyzing every hop to ensure the final destination is truly safe.</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                                    <i class="bi bi-cpu" aria-hidden="true"></i>
+                                    <i class="bi bi-chat-left-text" aria-hidden="true"></i>
                                 </div>
-                                <h5>AI-Powered Message Analysis</h5>
-                                <p class="text-muted small">Advanced pattern recognition for threats, harassment, coercion, and contextual explicit content detection</p>
+                                <h5>Contextual Message Scan</h5>
+                                <p class="text-muted small">Our engine looks beyond keywords, using contextual AI to detect intent, coercion, and subtle grooming techniques.</p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
-                                    <i class="bi bi-graph-up-arrow" aria-hidden="true"></i>
+                                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
                                 </div>
-                                <h5>Comprehensive Risk Assessment</h5>
-                                <p class="text-muted small">Multi-factor risk scoring with detailed threat categorization and actionable safety recommendations</p>
+                                <h5>Dynamic Threat Lists</h5>
+                                <p class="text-muted small">Domain lists are updated automatically and frequently from multiple open-source threat intelligence feeds.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Threat Detection Capabilities -->
                 <div class="mt-5 pt-5" id="capabilities">
                     <div class="text-center mb-5">
-                        <h2 class="fw-bold mb-3">Threat Detection Capabilities</h2>
-                        <p class="text-muted">Comprehensive protection against various online threats</p>
+                        <h2 class="fw-bold mb-3">What We Protect Against</h2>
+                        <p class="text-muted">Comprehensive protection across all digital communication layers.</p>
                     </div>
                     <div class="row g-4">
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
+                            <div class="text-center p-4 h-100">
+                                <div class="feature-icon bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
+                                    <i class="bi bi-person-slash" aria-hidden="true"></i>
+                                </div>
+                                <h5>Grooming & Coercion</h5>
+                                <p class="text-muted small">Detection of age manipulation, calls for secrecy, and pressure tactics used to exploit individuals.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-lg-3">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
                                     <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
                                 </div>
-                                <h5>Violent Threats</h5>
-                                <p class="text-muted small">Detection of severe threats, violent language, and dangerous intent with automatic high-risk classification</p>
+                                <h5>Direct Threats & Violence</h5>
+                                <p class="text-muted small">Identification of severe threats, self-harm language, and physical violence warnings for immediate response.</p>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
                                     <i class="bi bi-eye" aria-hidden="true"></i>
                                 </div>
                                 <h5>Harassment & Stalking</h5>
-                                <p class="text-muted small">Identification of gendered harassment, sexual harassment, stalking behavior, and coercive language</p>
+                                <p class="text-muted small">Identification of targeted abuse, sexual harassment, and behavior indicative of stalking or intimidation.</p>
                             </div>
                         </div>
-                        <div class="col-md-6 col-lg-4">
+                        <div class="col-md-6 col-lg-3">
                             <div class="text-center p-4 h-100">
                                 <div class="feature-icon bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3">
                                     <i class="bi bi-shield-exclamation" aria-hidden="true"></i>
                                 </div>
-                                <h5>Explicit Content</h5>
-                                <p class="text-muted small">Context-aware detection of explicit material with intelligent filtering for false positive reduction</p>
+                                <h5>Explicit & Phishing Content</h5>
+                                <p class="text-muted small">Context-aware detection of explicit material in messages and malicious links disguised as legitimate sites.</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- About Section -->
                 <div class="mt-5 pt-5" id="about">
                     <div class="row align-items-center">
                         <div class="col-lg-6">
                             <h2 class="fw-bold mb-4">About SalamaCheck</h2>
                             <p class="text-muted mb-4">
-                                SalamaCheck uses advanced AI algorithms to protect individuals from digital threats by providing comprehensive tools that detect and prevent potential harm. Our sophisticated analysis covers both links and messages for various risks.
+                                SalamaCheck was built on the core principle that digital safety should be accessible and unintrusive. Our technology delivers accurate risk assessments in real-time without storing user data, offering a secure and transparent service.
                             </p>
                             <div class="mb-4">
-                                <h5 class="fw-semibold mb-3">Advanced Technology</h5>
+                                <h5 class="fw-semibold mb-3">Under the Hood</h5>
                                 <ul class="text-muted list-unstyled">
-                                    <li class="mb-2"><i class="bi bi-cpu-fill text-success me-2" aria-hidden="true"></i>AI-powered threat detection with contextual analysis</li>
-                                    <li class="mb-2"><i class="bi bi-shield-lock text-success me-2" aria-hidden="true"></i>Privacy-first design with no data storage</li>
-                                    <li class="mb-2"><i class="bi bi-lightning-charge text-success me-2" aria-hidden="true"></i>Real-time analysis with multi-factor risk scoring</li>
-                                    <li class="mb-2"><i class="bi bi-graph-up-arrow text-success me-2" aria-hidden="true"></i>Continuous learning and threat intelligence updates</li>
+                                    <li class="mb-2"><i class="bi bi-cpu-fill text-success me-2" aria-hidden="true"></i>AI-powered contextual threat detection.</li>
+                                    <li class="mb-2"><i class="bi bi-shield-lock text-success me-2" aria-hidden="true"></i>Strict privacy-first policy: no data storage or logging.</li>
+                                    <li class="mb-2"><i class="bi bi-lightning-charge text-success me-2" aria-hidden="true"></i>Leverages automatic, dynamic threat intelligence feeds.</li>
+                                    <li class="mb-2"><i class="bi bi-graph-up-arrow text-success me-2" aria-hidden="true"></i>Reliable, enterprise-grade architecture (Flask/Werkzeug).</li>
                                 </ul>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="card safety-guidelines bg-light border-0">
                                 <div class="card-body p-4">
-                                    <h5 class="fw-semibold mb-3">Safety Guidelines</h5>
+                                    <h5 class="fw-semibold mb-3">Your Safety Guide</h5>
                                     <div class="d-flex mb-3">
                                         <i class="bi bi-exclamation-triangle-fill text-warning me-3 mt-1" aria-hidden="true"></i>
                                         <div>
-                                            <strong>Verify Suspicious Content</strong>
-                                            <p class="text-muted mb-0 small">Always check URLs and messages before engaging, especially from unknown sources</p>
+                                            <strong>If in Doubt, Scan It</strong>
+                                            <p class="text-muted mb-0 small">Never click a link or respond to a message that feels urgent or too good to be true without scanning first.</p>
                                         </div>
                                     </div>
                                     <div class="d-flex mb-3">
                                         <i class="bi bi-chat-dots-fill text-primary me-3 mt-1" aria-hidden="true"></i>
                                         <div>
-                                            <strong>Trust Your Instincts</strong>
-                                            <p class="text-muted mb-0 small">If content feels threatening or inappropriate, verify it before responding</p>
+                                            <strong>Protect Personal Information</strong>
+                                            <p class="text-muted mb-0 small">SalamaCheck doesn't store your messages, but you should never enter sensitive data into suspicious forms.</p>
                                         </div>
                                     </div>
                                     <div class="d-flex mb-3">
                                         <i class="bi bi-shield-exclamation text-danger me-3 mt-1" aria-hidden="true"></i>
                                         <div>
-                                            <strong>Report Threats</strong>
-                                            <p class="text-muted mb-0 small">Use our analysis results to document and report harmful content to authorities</p>
+                                            <strong>Act on High Risk Alerts</strong>
+                                            <p class="text-muted mb-0 small">A high risk rating (especially for threats or grooming) requires immediate action, including contacting local authorities.</p>
                                         </div>
                                     </div>
                                 </div>
@@ -319,7 +311,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-dark text-light py-5 mt-5">
         <div class="container">
             <div class="row align-items-center">
@@ -328,13 +319,13 @@
                         <i class="bi bi-shield-check me-2" aria-hidden="true"></i>SalamaCheck
                     </h5>
                     <p class="text-light-emphasis mb-0">
-                        Advanced AI-powered protection for your online safety
+                        A transparent and secure tool for your online safety.
                     </p>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <div class="d-flex justify-content-lg-end gap-3 mt-3 mt-lg-0">
                         <a href="#scanner" class="text-light-emphasis text-decoration-none">Scanner</a>
-                        <a href="#how-it-works" class="text-light-emphasis text-decoration-none">Technology</a>
+                        <a href="#how-it-works" class="text-light-emphasis text-decoration-none">How It Works</a>
                         <a href="#capabilities" class="text-light-emphasis text-decoration-none">Capabilities</a>
                         <a href="#about" class="text-light-emphasis text-decoration-none">About</a>
                     </div>
@@ -342,12 +333,11 @@
             </div>
             <hr class="my-4 border-secondary">
             <div class="text-center text-light-emphasis">
-                <p class="mb-0 small">&copy; 2025 SalamaCheck. All rights reserved. | Privacy-focused AI safety technology</p>
+                <p class="mb-0 small">&copy; 2025 SalamaCheck. All rights reserved. | Built for a safer digital world.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

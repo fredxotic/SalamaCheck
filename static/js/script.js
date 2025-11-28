@@ -51,13 +51,12 @@ class SalamaCheckUI {
         }
 
         const helpBtn = document.createElement('a');
-        helpBtn.href = 'https://www.unwomen.org/en/what-we-do/ending-violence-against-women/faqs/types-of-violence';
-        helpBtn.target = '_blank';
-        helpBtn.rel = 'noopener noreferrer';
+        // This links to an internal path which you can render an HTML page for
+        helpBtn.href = '/safety-resources'; 
         helpBtn.className = 'btn btn-outline-danger mt-3 help-btn';
         helpBtn.innerHTML = `
             <i class="bi bi-life-preserver"></i>
-            <span>Get Help & Resources</span>
+            <span>Safety Resources & Reporting Guide</span>
         `;
         
         container.appendChild(helpBtn);
@@ -123,7 +122,9 @@ class SalamaCheckUI {
         return icons[type] || 'info-circle';
     }
 
+    // FIXED: Ensure proper HTML escaping for link/text display
     static escapeHtml(unsafe) {
+        if (typeof unsafe !== 'string') return '';
         return unsafe
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
@@ -408,12 +409,56 @@ function displayUrlResult(result) {
         
         const urlDisplay = document.createElement('div');
         urlDisplay.className = 'url-display';
+        // Use escapeHtml for safety
         urlDisplay.innerHTML = `<code>${SalamaCheckUI.escapeHtml(result.final_url)}</code>`;
         urlDetail.appendChild(urlDisplay);
         
         detailsElement.appendChild(urlDetail);
     }
 
+    // Display redirect chain if available (New logic for clarity)
+    if (result.redirect_chain && result.redirect_chain.length > 1) {
+        const redirectDetail = document.createElement('div');
+        redirectDetail.className = 'mb-3';
+        
+        const redirectLabel = document.createElement('div');
+        redirectLabel.className = 'fw-bold mb-2';
+        redirectLabel.textContent = 'Redirect Path:';
+        redirectDetail.appendChild(redirectLabel);
+        
+        const redirectList = document.createElement('div');
+        redirectList.className = 'redirect-chain small';
+        
+        result.redirect_chain.forEach((domain, index) => {
+            const domainItem = document.createElement('div');
+            domainItem.className = 'd-flex align-items-center mb-1';
+            
+            if (index > 0) {
+                const arrow = document.createElement('span');
+                arrow.className = 'me-2 text-muted';
+                arrow.innerHTML = '↳';
+                domainItem.appendChild(arrow);
+            }
+            
+            const domainBadge = document.createElement('span');
+            domainBadge.className = 'badge bg-light text-dark me-2';
+            domainBadge.textContent = domain;
+            domainItem.appendChild(domainBadge);
+            
+            // Highlight dangerous/suspicious domains
+            if (result.dangerous_redirects && result.dangerous_redirects.includes(domain)) {
+                domainBadge.className = 'badge bg-danger text-white me-2';
+            } else if (result.suspicious_redirects && result.suspicious_redirects.includes(domain)) {
+                domainBadge.className = 'badge bg-warning text-dark me-2';
+            }
+            
+            redirectList.appendChild(domainItem);
+        });
+        
+        redirectDetail.appendChild(redirectList);
+        detailsElement.appendChild(redirectDetail);
+    }
+    
     if (result.risk_reason && result.risk_reason !== 'clean') {
         const reasonDetail = document.createElement('div');
         reasonDetail.className = 'mb-2';
@@ -449,7 +494,9 @@ function formatRiskReason(reason) {
         'trusted_redirect': 'Redirects to trusted domain',
         'url_shortener': 'URL shortener service detected',
         'explicit_content': 'Explicit content detected',
-        'clean': 'No issues found'
+        'clean': 'No issues found',
+        'suspicious_redirect_chain': 'Redirects through known malicious domains',
+        'url_shortener_chain': 'Uses multiple URL shorteners'
     };
     return reasonMap[reason] || reason.replace(/_/g, ' ');
 }
@@ -522,7 +569,7 @@ function displayTextResult(result) {
     }
     scoreElement.textContent = scoreText;
 
-    // Display detected threats (new format)
+    // Display detected threats
     if (result.detected_threats && result.detected_threats.length > 0) {
         const threatsTitle = document.createElement('div');
         threatsTitle.className = 'fw-bold mt-3 mb-2 text-danger';
@@ -537,7 +584,7 @@ function displayTextResult(result) {
         });
     }
 
-    // Display threat categories (new format)
+    // Display threat categories
     if (result.threat_categories && Object.keys(result.threat_categories).length > 0) {
         const categoriesTitle = document.createElement('div');
         categoriesTitle.className = 'fw-bold mt-3 mb-2';
@@ -547,14 +594,16 @@ function displayTextResult(result) {
         Object.entries(result.threat_categories).forEach(([category, count]) => {
             if (count > 0) {
                 const categoryBadge = document.createElement('span');
-                categoryBadge.className = 'flag-item bg-warning text-dark me-2 mb-2';
+                // Use danger background for high-priority threats like grooming
+                const isHighRisk = category === 'grooming' || category === 'severe_threat';
+                categoryBadge.className = `flag-item me-2 mb-2 ${isHighRisk ? 'bg-danger text-white' : 'bg-warning text-dark'}`;
                 categoryBadge.textContent = `${formatCategoryName(category)}: ${count}`;
                 flagsElement.appendChild(categoryBadge);
             }
         });
     }
 
-    // Display flags (backward compatibility)
+    // Display flags (backward compatibility/general safety)
     if (result.flags && result.flags.length > 0) {
         const flagsTitle = document.createElement('div');
         flagsTitle.className = 'fw-bold mt-3 mb-2';
@@ -650,6 +699,7 @@ function displayTextResult(result) {
 function formatCategoryName(category) {
     const categoryMap = {
         'severe_threat': 'Severe Threats',
+        'grooming': 'Grooming Behavior', // NEW: Added mapping
         'violent_threat': 'Violent Threats',
         'stalking': 'Stalking',
         'gendered_harassment': 'Gendered Harassment',
@@ -668,7 +718,8 @@ function formatFlagName(flag) {
         'harassment': 'Harassment',
         'stalking': 'Stalking Behavior',
         'coercion': 'Coercion',
-        'explicit_content': 'Explicit Content'
+        'explicit_content': 'Explicit Content',
+        'grooming': 'Grooming/Social Engineering' // NEW: Added mapping
     };
     return flagMap[flag] || flag.replace(/_/g, ' ');
 }
@@ -677,6 +728,7 @@ function formatFlagName(flag) {
 function formatRiskFactor(factor) {
     const factorMap = {
         'severe_violent_threats': 'Severe Violent Threats',
+        'grooming_behavior': 'Grooming Behavior', // NEW: Added mapping
         'violent_threats': 'Violent Threats',
         'stalking_behavior': 'Stalking Behavior',
         'gendered_harassment': 'Gendered Harassment',
@@ -693,7 +745,9 @@ function formatRiskFactor(factor) {
 // Generate appropriate risk message
 function getRiskMessage(result) {
     if (result.risk === 'high') {
-        if (result.threat_categories?.severe_threat) {
+        if (result.threat_categories?.grooming) { // Prioritize Grooming
+            return '🚨 Critical Risk: Grooming behavior and social engineering tactics detected. Do not engage.';
+        } else if (result.threat_categories?.severe_threat) {
             return 'Severe violent threats detected. This content requires immediate attention.';
         } else if (result.threat_categories?.violent_threat) {
             return 'Violent threats and dangerous content detected.';
@@ -748,10 +802,27 @@ function showError(containerId, errorMessage) {
     resultContainer.classList.remove('d-none');
 }
 
+// Function to check threat intelligence status (Used for logging/testing, no user-facing alerts)
+function checkThreatIntelStatus() {
+    fetch('/api/threat-intel/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Threat Intelligence Status:', data.data);
+            }
+        })
+        .catch(error => {
+            console.error('Failed to check threat intelligence status:', error);
+        });
+}
+
 // Enhanced initialization
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize theme manager
     ThemeManager.init();
+
+    // Check threat intelligence status (quietly runs in the background)
+    checkThreatIntelStatus();
     
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
