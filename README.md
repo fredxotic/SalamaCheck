@@ -2,7 +2,7 @@
 
 **Advanced protection against dangerous links and harmful messages**
 
-[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](YOUR_VERCEL_OR_RENDER_LINK_HERE)
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://salamacheck.onrender.com/)
 
 
 ## 🛡️ Overview
