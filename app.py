@@ -64,7 +64,7 @@ def set_security_headers(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
     response.headers['Content-Security-Policy'] = (
@@ -78,6 +78,9 @@ def set_security_headers(response):
         "base-uri 'self'; "
         "form-action 'self'"
     )
+    # Suppress server technology fingerprinting
+    response.headers.pop('Server', None)
+    response.headers['X-Powered-By'] = 'SalamaCheck'
     return response
 
 # Initialize extensions with CORS configuration
@@ -262,6 +265,24 @@ def index():
 @app.route('/safety-resources')
 def safety_resources():
     return render_template('safety_resources.html')
+
+@app.route('/robots.txt')
+def robots_txt():
+    """Serve robots.txt for search engine crawlers"""
+    content = """User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: https://salamacheck.onrender.com/sitemap.xml"""
+    return app.response_class(content, mimetype='text/plain')
+
+@app.route('/.well-known/security.txt')
+@app.route('/security.txt')
+def security_txt():
+    """Serve security.txt for responsible vulnerability disclosure"""
+    content = (
+        "Contact: https://github.com/fredxotic/SalamaCheck/issues\n"
+        "Preferred-Languages: en\n"
+        "Canonical: https://salamacheck.onrender.com/.well-known/security.txt\n"
+        "Policy: https://github.com/fredxotic/SalamaCheck/security/policy\n"
+    )
+    return app.response_class(content, mimetype='text/plain')
 
 @app.route('/api/scan/url', methods=['POST'])
 @limiter.limit("10 per minute")
