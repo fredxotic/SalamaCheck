@@ -22,18 +22,18 @@ logger = logging.getLogger(__name__)
 analyzer = SentimentIntensityAnalyzer()
 
 # =============================================================================
-# THREAT AND SAFETY DATABASES - MUTABLE FOR UPDATES
+# THREAT AND SAFETY DATABASES - IMMUTABLE SETS FOR THREAD-SAFE READS & O(1) LOOKUPS
 # =============================================================================
 
-# Base lists that can be updated dynamically
-GLOBAL_DANGEROUS_DOMAINS = [
+# Base sets that can be atomically swapped on update
+GLOBAL_DANGEROUS_DOMAINS = frozenset([
     'grabify.link', 'iplogger.org', 'iplogger.com', 'blasze.com',
     'cutt.ly', 'shorte.st', 'adf.ly', 'bc.vc', 'ouo.io', 'click.ru',
     'link.tl', 'soo.gd', 'thy.pw', 'ceesty.com', 'urlz.fr', 'zzb.bz',
     '2no.co', 'ipgrab.org', 'yip.su', 'iplo.ru', 'traceurl.com'
-]
+])
 
-GLOBAL_SAFE_DOMAINS = [
+GLOBAL_SAFE_DOMAINS = frozenset([
     'google.com', 'github.com', 'microsoft.com', 'apple.com', 'amazon.com',
     'facebook.com', 'twitter.com', 'instagram.com', 'linkedin.com',
     'youtube.com', 'netflix.com', 'spotify.com', 'discord.com',
@@ -43,15 +43,15 @@ GLOBAL_SAFE_DOMAINS = [
     'who.int', 'cdc.gov', 'cancer.org', 'healthline.com', 'webmd.com',
     'mayoclinic.org', 'nih.gov', 'medicalnewstoday.com', 'gov.uk',
     'bbc.com', 'cnn.com', 'nytimes.com', 'washingtonpost.com'
-]
+])
 
-GLOBAL_SUSPICIOUS_SHORTENERS = [
+GLOBAL_SUSPICIOUS_SHORTENERS = frozenset([
     'bit.ly', 'tinyurl.com', 'shorturl.at', 't.co', 'goo.gl', 'ow.ly',
     'buff.ly', 'tiny.cc', 'is.gd', 'cli.gs', 'yfrog.com', 'migre.me',
     'ff.im', 'url4.eu', 'twit.ac', 'su.pr', 'twurl.nl', 'snipurl.com',
     'short.to', 'budurl.com', 'ping.fm', 'post.ly', 'just.as', 'bkite.com',
     'twitterfeed.com', 'shrten.com', 'short.ie', 'shorl.com', 'x.co'
-]
+])
 
 # Threat intelligence status tracking
 THREAT_INTEL_STATUS = {
@@ -120,9 +120,9 @@ def fetch_and_update_threat_intel() -> bool:
             except Exception as e:
                 logger.warning(f"Failed to fetch from URLHaus: {e}")
             
-            # Update global lists if we got new data
+            # Update global lists if we got new data (atomic frozenset swap)
             if domains_loaded > 0:
-                GLOBAL_DANGEROUS_DOMAINS = list(new_dangerous_domains)
+                GLOBAL_DANGEROUS_DOMAINS = frozenset(new_dangerous_domains)
                 THREAT_INTEL_STATUS.update({
                     'last_updated': time.time(),
                     'domains_loaded': domains_loaded,
@@ -285,38 +285,71 @@ RISK_THRESHOLDS = {
 # CORE ANALYSIS FUNCTIONS
 # =============================================================================
 
+def extract_keyword_from_pattern(pattern: str) -> str:
+    """Properly extract a keyword from a regex pattern by removing anchors like \\b.
+    str.strip(r'\\b') is WRONG — it strips individual chars (\\, b), not the sequence.
+    """
+    return re.sub(r'^\\b|\\b$', '', pattern)
+
 def get_domain_from_url(url: str) -> str:
     """Extract the main domain from a URL"""
     try:
         parsed = urlparse(url)
         domain = parsed.netloc.lower()
+        # Strip port number if present
+        if ':' in domain:
+            domain = domain.split(':')[0]
         if domain.startswith('www.'):
             domain = domain[4:]
         return domain
     except:
         return ""
 
-# (is_safe_domain, is_dangerous_domain, is_suspicious_shortener remain unchanged as they use the global lists)
-def is_safe_domain(domain: str) -> bool:
-    """Check if a domain is in the safe whitelist"""
-    for safe_domain in GLOBAL_SAFE_DOMAINS:
-        if domain == safe_domain or domain.endswith('.' + safe_domain):
+def is_private_ip(hostname: str) -> bool:
+    """Check if a hostname resolves to a private/internal IP (SSRF protection)."""
+    import ipaddress
+    import socket
+    try:
+        # Direct IP check
+        try:
+            addr = ipaddress.ip_address(hostname)
+            return addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved
+        except ValueError:
+            pass
+        # DNS resolution check
+        resolved = socket.getaddrinfo(hostname, None)
+        for family, _, _, _, sockaddr in resolved:
+            ip_str = sockaddr[0]
+            addr = ipaddress.ip_address(ip_str)
+            if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
+                return True
+        return False
+    except Exception:
+        return False
+
+def _domain_in_set(domain: str, domain_set: frozenset) -> bool:
+    """Check if domain or any parent domain is in the set. O(1) per level."""
+    if domain in domain_set:
+        return True
+    # Walk up subdomain levels: sub.example.com -> example.com
+    parts = domain.split('.')
+    for i in range(1, len(parts)):
+        parent = '.'.join(parts[i:])
+        if parent in domain_set:
             return True
     return False
+
+def is_safe_domain(domain: str) -> bool:
+    """Check if a domain is in the safe whitelist"""
+    return _domain_in_set(domain, GLOBAL_SAFE_DOMAINS)
 
 def is_dangerous_domain(domain: str) -> bool:
     """Check if a domain is explicitly dangerous"""
-    for dangerous_domain in GLOBAL_DANGEROUS_DOMAINS:
-        if domain == dangerous_domain or domain.endswith('.' + dangerous_domain):
-            return True
-    return False
+    return _domain_in_set(domain, GLOBAL_DANGEROUS_DOMAINS)
 
 def is_suspicious_shortener(domain: str) -> bool:
     """Check if a domain is a suspicious URL shortener"""
-    for shortener in GLOBAL_SUSPICIOUS_SHORTENERS:
-        if domain == shortener or domain.endswith('.' + shortener):
-            return True
-    return False
+    return _domain_in_set(domain, GLOBAL_SUSPICIOUS_SHORTENERS)
 
 def analyze_context(text: str, keyword: str) -> bool:
     """
@@ -414,7 +447,7 @@ def detect_threat_patterns(text: str) -> Dict[str, List[str]]:
     for pattern in EXPLICIT_TERMS:
         matches = re.findall(pattern, text_lower)
         if matches:
-            keyword = pattern.strip(r'\b')
+            keyword = extract_keyword_from_pattern(pattern)
             if analyze_context(text_lower, keyword):
                 threats_detected['explicit_content'].extend(matches)
     
@@ -496,16 +529,12 @@ def scan_text(message: str) -> Dict[str, Any]:
         explicit_score = 0
         explicit_terms_found = []
         
-        # Explicit terms check
-        for pattern in EXPLICIT_TERMS:
-            matches = re.findall(pattern, message_lower)
-            if matches:
-                keyword = pattern.strip(r'\b')
-                if analyze_context(message_lower, keyword):
-                    explicit_score += 3 * len(matches)
-                    explicit_terms_found.extend(matches)
+        # Derive explicit score from threats already detected (avoid double-counting)
+        if threats_detected['explicit_content']:
+            explicit_score += 3 * len(threats_detected['explicit_content'])
+            explicit_terms_found.extend(threats_detected['explicit_content'])
         
-        # Context-sensitive terms check
+        # Context-sensitive terms check (these are NOT in EXPLICIT_TERMS, so no duplication)
         for term, safe_indicators in CONTEXT_SENSITIVE_TERMS.items():
             if re.search(r'\b' + re.escape(term) + r'\b', message_lower):
                 if analyze_context(message_lower, term):
@@ -561,7 +590,7 @@ def scan_text(message: str) -> Dict[str, Any]:
         logger.error(f"Text analysis runtime error: {e}")
         return {
             'risk': 'error',
-            'error': f'Text analysis failed: {str(e)}',
+            'error': 'Text analysis failed. Please try again.',
             'scan_time': round(time.time() - start_time, 2)
         }
 
@@ -581,15 +610,8 @@ def scan_url(link: str) -> Dict[str, Any]:
         
         initial_domain = get_domain_from_url(link)
         
-        # Check initial domain
-        if is_safe_domain(initial_domain):
-            return {
-                'status': 'safe',
-                'final_url': link,
-                'message': 'This link is from a trusted domain',
-                'risk_reason': 'trusted_domain',
-                'scan_time': round(time.time() - start_time, 2)
-            }
+        # Track if initial domain is trusted (used later if redirects stay safe)
+        initial_is_safe = is_safe_domain(initial_domain)
         
         if is_dangerous_domain(initial_domain):
             return {
@@ -613,6 +635,16 @@ def scan_url(link: str) -> Dict[str, Any]:
         
         final_url = response.url.lower()
         final_domain = get_domain_from_url(final_url)
+        
+        # SSRF Protection: check if any redirect landed on a private/internal IP
+        if final_domain and is_private_ip(final_domain):
+            return {
+                'status': 'danger',
+                'final_url': final_url,
+                'message': 'Warning: This link redirects to a private/internal address.',
+                'risk_reason': 'ssrf_blocked',
+                'scan_time': round(time.time() - start_time, 2)
+            }
         
         # Collect all domains in redirect chain for analysis
         redirect_domains = []
@@ -710,11 +742,13 @@ def scan_url(link: str) -> Dict[str, Any]:
                 }
         
         # If no issues found in entire chain, consider it safe
+        safe_msg = 'This link is from a trusted domain' if initial_is_safe else 'This link appears to be safe'
+        safe_reason = 'trusted_domain' if initial_is_safe else 'clean'
         return {
             'status': 'safe',
             'final_url': final_url,
-            'message': 'This link appears to be safe',
-            'risk_reason': 'clean',
+            'message': safe_msg,
+            'risk_reason': safe_reason,
             'redirect_chain': redirect_domains,
             'scan_time': round(time.time() - start_time, 2)
         }
@@ -732,16 +766,17 @@ def scan_url(link: str) -> Dict[str, Any]:
             'scan_time': round(time.time() - start_time, 2)
         }
     except requests.exceptions.RequestException as e:
+        logger.warning(f"URL request error: {e}")
         return {
             'status': 'error',
-            'message': f'Invalid link or network error: {str(e)}',
+            'message': 'Invalid link or network error. Please check the URL and try again.',
             'scan_time': round(time.time() - start_time, 2)
         }
     except Exception as e:
         logger.error(f"URL analysis unexpected error: {e}")
         return {
             'status': 'error',
-            'message': f'Unexpected error during URL analysis: {str(e)}',
+            'message': 'An unexpected error occurred during URL analysis. Please try again.',
             'scan_time': round(time.time() - start_time, 2)
         }
 
@@ -760,7 +795,7 @@ def analyze_page_content(html_content: str, url: str) -> Dict[str, Any]:
     for term in EXPLICIT_TERMS:
         if re.search(term, text_content):
             explicit_score += 3
-            explicit_terms_found.append(term.strip(r'\b'))
+            explicit_terms_found.append(extract_keyword_from_pattern(term))
     
     context_sensitive_found = []
     for term, safe_indicators in CONTEXT_SENSITIVE_TERMS.items():

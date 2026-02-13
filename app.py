@@ -7,11 +7,19 @@ import logging
 import re
 import time
 import os
+import secrets
 from urllib.parse import urlparse
 from typing import Dict, Any, Optional
 from werkzeug.middleware.proxy_fix import ProxyFix
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
+
+# Load .env file for local development (no-op if python-dotenv not installed)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 class PrivacyFilter(logging.Filter):
     def filter(self, record):
@@ -22,6 +30,7 @@ class PrivacyFilter(logging.Filter):
         return True
 
 class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY', secrets.token_hex(32))
     DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
     TESTING = os.environ.get('TESTING', 'False').lower() == 'true'
     RATE_LIMIT = os.environ.get('RATE_LIMIT', '10 per minute')
@@ -33,6 +42,12 @@ class Config:
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Inject current datetime into all templates for dynamic copyright year, etc.
+from datetime import datetime
+@app.context_processor
+def inject_now():
+    return {'now': datetime.utcnow()}
 
 # Apply proxy fix for correct client IP behind load balancers/reverse proxies
 app.wsgi_app = ProxyFix(
@@ -52,6 +67,17 @@ def set_security_headers(response):
     response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = 'geolocation=(), microphone=(), camera=()'
+    response.headers['Content-Security-Policy'] = (
+        "default-src 'self'; "
+        "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "style-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+        "font-src 'self' https://cdn.jsdelivr.net; "
+        "img-src 'self' data:; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
     return response
 
 # Initialize extensions with CORS configuration
@@ -153,7 +179,8 @@ class InputValidator:
         if len(text) < 3:
             return {'valid': False, 'error': 'Text too short to analyze (minimum 3 characters)'}
         
-        sanitized = re.sub(r'[^\w\s\.,!?@#$%^&*()_+\-=\[\]{};:\'\"\\|`~<>/]', '', text)
+        # Sanitize: strip control characters but preserve all Unicode letters/scripts
+        sanitized = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
         sanitized = sanitized.strip()
         
         if len(sanitized) < 3:
